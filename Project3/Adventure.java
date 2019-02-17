@@ -1,8 +1,14 @@
 import java.util.Scanner;
 public class Adventure{
-	public static void main(String args[]) {
+    public static void main(String args[]) throws Exception
+    {
         Scanner sc = new Scanner(System.in);
-        GameChar character = new GameChar();
+        if(args.length == 0)
+        {
+            print("no map file provided");
+            return;
+        }
+        GameChar character = new GameChar(args[0]);
         String in;
         do
         {
