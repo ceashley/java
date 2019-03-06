@@ -26,7 +26,7 @@ public class Adventure{
             {
                 print("Invalid command: "+ in);
             }
-            print("You are at location " + character.getY() + "," + character.getX());
+            print("You are at location " + character.getY() + "," + character.getX() +" in terrain " + character.getTerrain());
         }while(!in.equals("quit") && !in.equals("q"));
         print("Farewell");
 	}

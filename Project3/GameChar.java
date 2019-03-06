@@ -11,7 +11,7 @@ public class GameChar{
         String[] strArry = in.split(" ", 2);
         if(strArry[1].equals("east"))
         {
-            if(xCord >= 0 && xCord < xMapBound)
+            if(xCord >= 0 && xCord < xMapBound - 1)
             {   
                 xCord += 1;
                 print("Moving east");
@@ -47,7 +47,7 @@ public class GameChar{
         }
         else if(strArry[1].equals("south"))
         {
-            if(yCord >= 0 && yCord < yMapBound)
+            if(yCord >= 0 && yCord < yMapBound - 1)
             {
                 yCord += 1;
                 print("Moving south");
@@ -61,6 +61,12 @@ public class GameChar{
         {
             print("You can't go that way.");
         }
+        map.displayMiniMap(xCord,yCord,1);
+
+    }
+    public String getTerrain()
+    {
+        return map.getTerrainAt(xCord,yCord);
     }
     public void invintory()
     {        

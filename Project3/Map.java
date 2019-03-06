@@ -3,14 +3,12 @@ import java.io.*;
 import java.util.*;
 
 public class Map{
-    private int row;
-    private int col;
+    private int rowSize;
+    private int colSize;
     private List<String> map;
-    private int vision;
-    Map(String mapFile,int vision)throws Exception
+    Map(String mapFile)throws Exception
     {
         readMapFile(mapFile);
-        this.vision = vision;
     }
     private void readMapFile(String mapFile) throws Exception
     {
@@ -25,34 +23,52 @@ public class Map{
     private void setMapSize(String mapSize)
     {
         String[] cords = mapSize.split("\\s+");
-        row = Integer.parseInt(cords[0]);
-        col = Integer.parseInt(cords[1]);
+        rowSize = Integer.parseInt(cords[0]);
+        colSize = Integer.parseInt(cords[1]);
     }
-    public void displayMiniMap(int xPos, int yPos)
+    public void displayMiniMap(int xPos, int yPos,int vision)
     {
-        int tmpxPos = xPos - 1;
-        int tmpyPos = yPos - 1;
-        String[][] miniMap = new String[vision][vision];
-        for(int r = 0; r < vision; r++)
+        ArrayList<String> miniMap = new ArrayList<String>();        
+        int i = 0;
+        for(int r = yPos - vision; r <= yPos + vision; r++)
         {
-            for(int c = 0; c < vision; c++)
+            miniMap.add("");
+            for(int c = xPos - vision; c <= xPos + vision; c++)
             {
-                if(tmpxPos < 0)
-                    miniMap[r][c] = "X";
-                else if(yPos < 0)
-                    miniMap[r][c] = "X";
+                String cell = miniMap.get(i);
+                if(c < 0 || c >= colSize)
+                {
+                    cell += "X";
+                    miniMap.set(i,cell);
+                }
+                else if(r < 0 || r >= rowSize)
+                {
+                    cell += "X";
+                    miniMap.set(i,cell);
+                }
                 else
-                    miniMap[r][c] = (map.get(r)).charAt(c);
-                tmpxPos++;
+                {
+                    cell += String.valueOf((map.get(r)).charAt(c));
+                    miniMap.set(i,cell);
+                }
             }
+            i++;
+        }
+        for(String row : miniMap)
+        {
+            System.out.println(row);
         }
     }
     public int getRow()
     {
-        return row;
+        return rowSize;
     }
     public int getCol()
     {
-        return col;
+        return colSize;
+    }
+    public String getTerrainAt(int x, int y)
+    {
+        return String.valueOf((map.get(y)).charAt(x));
     }
 }
