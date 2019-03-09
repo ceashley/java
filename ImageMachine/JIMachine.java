@@ -1,21 +1,25 @@
 import javafx.application.Application; 
 import javafx.scene.Group; 
 import javafx.scene.Scene; 
-import javafx.stage.Stage;  
-import javafx.scene.shape.*;
+import javafx.stage.*; 
+import javafx.stage.FileChooser.ExtensionFilter; 
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
 import javafx.scene.input.MouseEvent;
 import javafx.event.*;
 import javafx.scene.image.*;
 import javafx.scene.control.*;
+import java.io.*; 
+import java.util.*;
+import java.net.MalformedURLException;
 
 public class JIMachine extends Application{
     double height,width;
+    Image image;
+    BorderPane pane;
     @Override 
-    public void start(Stage stage) {        
+    public void start(Stage stage) throws Exception{        
            
-        Image image = new Image("Thinking112x122.png",false);      
+        image = new Image("Thinking112x122.png",false);      
         ImageView iv1 = new ImageView();
         iv1.setImage(image);
         height = image.getHeight();
@@ -65,15 +69,47 @@ public class JIMachine extends Application{
         };        
         exit.setOnAction(exitBtn);
 
+        Button open = new Button("Open");
+        EventHandler<ActionEvent> openBtn = new EventHandler<ActionEvent>() { 
+            public void handle(ActionEvent e) 
+            {
+                try{
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Open Resource File");
+                    fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
+                    File selectedFile = fileChooser.showOpenDialog(stage);
+                    if (selectedFile != null) {
+                        image = new Image(selectedFile.toURI().toURL().toExternalForm(),false);
+                        iv1.setImage(image);
+                        height = image.getHeight();
+                        width = image.getWidth();
+                        iv1.setFitWidth(width);
+                        iv1.setFitHeight(height);
+                        stage.setWidth(width + 50);
+                        stage.setHeight(height + 50);
+                        pane.setCenter(iv1);
+                    }
+                }
+                catch(MalformedURLException ex){
+                    System.out.print(ex);
+                    System.exit(1);
+                }
+            } 
+        };        
+        open.setOnAction(openBtn);
+
         Group root = new Group();        
         Scene scene = new Scene(root, 500, 500);     
-        HBox box = new HBox();
-        box.getChildren().add(iv1);
-        box.getChildren().add(zoom);
-        box.getChildren().add(defaultSize);
-        box.getChildren().add(zoomOut);
-        box.getChildren().add(exit);
-        root.getChildren().add(box);        
+        pane = new BorderPane();
+        HBox bottomPane = new HBox();
+        pane.setCenter(iv1);
+        bottomPane.getChildren().add(open);
+        bottomPane.getChildren().add(zoom);
+        bottomPane.getChildren().add(defaultSize);
+        bottomPane.getChildren().add(zoomOut);
+        bottomPane.getChildren().add(exit);
+        pane.setTop(bottomPane);
+        root.getChildren().add(pane);        
         stage.setTitle("Image Machine"); 
         stage.setScene(scene); 
         stage.sizeToScene();
