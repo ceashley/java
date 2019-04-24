@@ -1,26 +1,52 @@
 import java.util.Scanner;
+import java.io.*; 
+import java.util.*;
+
 public class GameChar{
     
     private int xCord;
     private int yCord;
     private Map map;
+    private ArrayList<String> miniMap;
     private int yMapBound;
     private int xMapBound;
+    public String processCommand(String in)
+    {
+        if(in.charAt(0) == 'g')
+        {
+            return goCommand(in);
+        }
+        else if(in.charAt(0) == 'i')
+        {
+            return "";//invintory();
+        }
+        else if(in.charAt(0) != 'q')
+        {
+            return "Invalid command: "+ in;
+        }
+        else
+        {
+            return "Farewell";
+        }
+    }
     public String goCommand(String in)
     {
-        return in;
-        /*String[] strArry = in.split(" ", 2);
+        String[] strArry = in.split(" ", 2);
+        if(strArry.length < 2)
+        {
+            return "Invalid command: "+ in;
+        }
         if(strArry[1].equals("east"))
         {
             if(xCord >= 0 && xCord < xMapBound - 1)
             {   
                 xCord += 1;
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Moving east";
             }
             else
             {
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Cant move that far " + strArry[1];
             }
         }
@@ -29,12 +55,12 @@ public class GameChar{
             if(xCord > 0 && xCord <= xMapBound)
             {    
                 xCord -= 1;  
-                map.displayMiniMap(xCord,yCord,1);                      
+                miniMap = map.displayMiniMap(xCord,yCord,1);                      
                 return "Moving west";
             }
             else
             {
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Cant move that far " + strArry[1];
             }
         }
@@ -43,12 +69,12 @@ public class GameChar{
             if(yCord > 0 && yCord <= yMapBound)
             {
                 yCord -= 1;
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Moving north";
             }
             else
             {
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return"Cant move that far " + strArry[1];
             }
         }
@@ -57,17 +83,21 @@ public class GameChar{
             if(yCord >= 0 && yCord < yMapBound - 1)
             {
                 yCord += 1;
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Moving south";
             }
             else
             {
-                map.displayMiniMap(xCord,yCord,1);
+                miniMap = map.displayMiniMap(xCord,yCord,1);
                 return "Cant move that far " + strArry[1];
             }
         }
-        map.displayMiniMap(xCord,yCord,1);
-        return "You can't go that way.";*/
+        miniMap = map.displayMiniMap(xCord,yCord,1);
+        return "You can't go that way.";
+    }
+    public ArrayList<String> getMiniMap()
+    {
+        return miniMap;
     }
     public String getTerrain()
     {

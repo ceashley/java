@@ -26,7 +26,7 @@ public class Map{
         rowSize = Integer.parseInt(cords[0]);
         colSize = Integer.parseInt(cords[1]);
     }
-    public void displayMiniMap(int xPos, int yPos,int vision)
+    public ArrayList<String> displayMiniMap(int xPos, int yPos,int vision)
     {
         ArrayList<String> miniMap = new ArrayList<String>();        
         int i = 0;
@@ -54,10 +54,7 @@ public class Map{
             }
             i++;
         }
-        for(String row : miniMap)
-        {
-            System.out.println(row);
-        }
+        return miniMap;
     }
     public int getRow()
     {
