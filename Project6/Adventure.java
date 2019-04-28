@@ -10,30 +10,82 @@ import javafx.scene.layout.*;
 import javafx.scene.input.*;
 import javafx.event.*;
 import javafx.scene.control.Alert.AlertType; 
+import javafx.scene.image.*;
 
 public class Adventure extends Application{
     static String mapFile;
-    ArrayList<String> miniMap;
-    GridPane worldMap;
-    TextArea mapDisplay;
-    public void updateMiniMap()
+    ArrayList<String> miniMap = new ArrayList<String>();
+    GridPane worldMap = new GridPane();
+    private int tileHeight = 10;
+    private int tileWidth = 10;
+    private int currentTile = 0;
+    private int currentTileRow = 0;
+    private HashMap<String,List<String>> icons = new HashMap<String,List<String>>();
+    GameChar character;
+    private void updateMiniMap()
     {
-        String md = "";
-        for(String row : miniMap)
+        for(int row = 0; row < 5; row++)
         {
-           md += row + "\n";
+            for(int col = 0; col < 5; col++)
+            {
+                ImageView tileImage = new ImageView();
+                tileImage.setImage(getTileImage(row,col));
+                tileImage.setFitHeight(tileHeight);
+                tileImage.setFitWidth(tileWidth);
+                GridPane.setRowIndex(tileImage, row);
+                GridPane.setColumnIndex(tileImage, col);
+                worldMap.getChildren().addAll(tileImage);
+            }
         }
-        mapDisplay.setText(md);
+        currentTileRow = 0;
+        currentTile = 0;
+    }
+    private Image getTileImage(int row, int col)
+    {
+        Image image;// = new Image("MapPics/forest.png",false);
+        String tile = getTile(row, col);
+        //System.out.print(icons.get(tile) + "\n");
+        image = new Image(icons.get(tile).get(1),false);
+        return image;
+    }
+    private String getTile(int row, int col)
+    {
+        String tile;
+        if(currentTile >= 5)
+        {
+            currentTileRow++;
+            currentTile = 0;
+        }  
+        if(row == 2 && col == 2) //if we are getting the tile for the center of the map then its the player
+        {
+            tile = character.getPlayerIcon();
+        }   
+        else
+        {
+            tile = Character.toString(miniMap.get(currentTileRow).charAt(currentTile));
+        }          
+        currentTile++;
+        return tile;
+    }
+    private void updateTileSize(String tileSize)
+    {
+        String[] ts = tileSize.split(" ",2);
+        tileWidth = Integer.parseInt(ts[0]);
+        tileHeight = Integer.parseInt(ts[1]);
     }
     @Override 
     public void start(Stage stage) throws Exception{
-        GameChar character = new GameChar(mapFile);
+        character = new GameChar(mapFile);
+        updateTileSize(character.getTileSize());
         miniMap = character.getMiniMap();
+        icons = character.getMapIcons();
         updateMiniMap();
         BorderPane pane = new BorderPane();
         TextField inputBox = new TextField();
         TextArea commandOutput = new TextArea();
         commandOutput.setEditable(false);
+        commandOutput.setPrefHeight(tileHeight * 5);
+        commandOutput.setPrefWidth(tileWidth * 5);
         inputBox.setOnKeyPressed(new EventHandler<KeyEvent>()
         {
             @Override
@@ -46,13 +98,13 @@ public class Adventure extends Application{
                     {
                         Alert a = new Alert(AlertType.NONE);
                         a.setAlertType(AlertType.CONFIRMATION); 
-                        a.setContentText(commandOutput.getText()); 
+                        a.setContentText("Farewell"); 
                         a.setHeaderText("");
                         a.setOnCloseRequest(event -> System.exit(0));
                         a.show(); 
                     }  
                     String location = "\nYou are at location " + character.getY() + "," + character.getX() +" in terrain " + character.getTerrain();
-                    commandOutput.setText(inputBox.getText() + "\n" + result + location);
+                    commandOutput.appendText(inputBox.getText() + "\n" + result + location+ "\n");
                     inputBox.setText("");
                     miniMap = character.getMiniMap();  
                     updateMiniMap();                  
@@ -106,12 +158,12 @@ public class Adventure extends Application{
         bottomPane.getChildren().add(quitGame);
         bottomPane.getChildren().add(openGame);
         
-        pane.setCenter(mapDisplay);
+        pane.setCenter(worldMap);
         pane.setRight(commandOutput);
         pane.setBottom(bottomPane);
         Group root = new Group();
         root.getChildren().add(pane); 
-        Scene scene = new Scene(root, 500, 500);    
+        Scene scene = new Scene(root, tileWidth * 10 + 10, tileHeight * 5 +30);    
         stage.setTitle("Adventure Game");         
         stage.setScene(scene); 
         stage.sizeToScene();
@@ -124,7 +176,8 @@ public class Adventure extends Application{
         if(args.length == 0)
         {
             print("no map file provided");
-            return;
+            String wait = System. console(). readLine();
+            System.exit(1);
         }
         mapFile = args[0];
         Application.launch(args);

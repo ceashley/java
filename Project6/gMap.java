@@ -2,11 +2,16 @@ import java.util.Scanner;
 import java.io.*; 
 import java.util.*;
 
-public class Map{
+public class gMap{
     private int rowSize;
     private int colSize;
     private List<String> map;
-    Map(String mapFile)throws Exception
+    private String tileSize;
+    private String itemFile;
+    private HashMap<String,List<String>> mapIcons = new HashMap<String,List<String>>();
+    private String outOfBoundsIcon = "-";
+    private String playerIcon = "1";
+    gMap(String mapFile)throws Exception
     {
         readMapFile(mapFile);
     }
@@ -15,9 +20,22 @@ public class Map{
         Scanner sc = new Scanner(new File(mapFile));        
         setMapSize(sc.nextLine());//first line is always the maps size 
         map = new ArrayList<String>();
-        while (sc.hasNextLine()) {
+        for (int i = 0;i<rowSize;i++) {
             map.add(sc.nextLine());
-        }       
+        }  
+        tileSize = sc.nextLine();
+        itemFile = sc.nextLine();
+        while(sc.hasNextLine()){
+            String[] line = sc.nextLine().split(";");
+            List<String> terrain = new ArrayList<String>();;
+            terrain.add(line[1]);
+            terrain.add(line[2]);
+            if(line[1].equals("out"))
+                outOfBoundsIcon = line[0];
+            else if(line[1].equals("person"))
+                playerIcon = line[0];
+            mapIcons.put(line[0],terrain);
+        }
         sc.close();
     }
     private void setMapSize(String mapSize)
@@ -38,12 +56,12 @@ public class Map{
                 String cell = miniMap.get(i);
                 if(c < 0 || c >= colSize)
                 {
-                    cell += "X";
+                    cell += outOfBoundsIcon;
                     miniMap.set(i,cell);
                 }
                 else if(r < 0 || r >= rowSize)
                 {
-                    cell += "X";
+                    cell += outOfBoundsIcon;
                     miniMap.set(i,cell);
                 }
                 else
@@ -56,6 +74,22 @@ public class Map{
         }
         return miniMap;
     }
+    public String getPlayerIcon()
+    {
+        return playerIcon;
+    }
+    public String getTileSize()
+    {
+        return tileSize;
+    }
+    public String getItemFile()
+    {
+        return itemFile;
+    }
+    public HashMap<String,List<String>> getMapIcons()
+    {
+        return mapIcons;
+    }
     public int getRow()
     {
         return rowSize;
@@ -66,6 +100,6 @@ public class Map{
     }
     public String getTerrainAt(int x, int y)
     {
-        return String.valueOf((map.get(y)).charAt(x));
+        return mapIcons.get(String.valueOf((map.get(y)).charAt(x))).get(0);
     }
 }
